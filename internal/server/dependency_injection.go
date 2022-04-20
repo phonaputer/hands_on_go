@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/phonaputer/hands_on_go/internal/logic"
 	"github.com/phonaputer/hands_on_go/internal/rest"
 	"net/http"
 )
@@ -10,7 +11,13 @@ type userServerApplication struct {
 }
 
 func initializeUserServerApplication() (*userServerApplication, error) {
-	userServerHTTPHandler := rest.NewUserServiceHTTPHandler()
+
+	userController := rest.NewUserController(
+		&rest.UserValidatorStubImpl{},
+		&logic.UserServiceStubImpl{},
+	)
+
+	userServerHTTPHandler := rest.NewUserServiceHTTPHandler(userController)
 
 	return &userServerApplication{
 		userServerHTTPHandler: userServerHTTPHandler,

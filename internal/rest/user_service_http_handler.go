@@ -1,12 +1,15 @@
 package rest
 
 import (
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
-func NewUserServiceHTTPHandler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(200)
-		w.Write([]byte("hello!"))
-	})
+func NewUserServiceHTTPHandler(userController *UserController) http.Handler {
+	r := mux.NewRouter()
+
+	r.HandleFunc("/users/{id}", userController.GetByID).Methods("GET")
+	r.HandleFunc("/users/{id}", userController.DeleteByID).Methods("DELETE")
+
+	return r
 }
