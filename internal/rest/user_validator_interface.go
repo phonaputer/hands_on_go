@@ -8,4 +8,6 @@ type userValidator interface {
 
 	// ValidateDeleteUserByID returns a User’s integer ID or an error
 	ValidateDeleteUserByID(r *http.Request) (int, error)
+
+	ValidateCreateUser(r *http.Request) (*createUserRequest, error)
 }

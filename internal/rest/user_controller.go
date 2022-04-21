@@ -25,6 +25,58 @@ func NewUserController(userValidator userValidator,
 	}
 }
 
+func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
+	validatedRequest, err := u.validator.ValidateCreateUser(r)
+	if errors.Is(err, blerr.ErrInvalidInput) {
+		w.WriteHeader(400)
+		w.Write([]byte("request not valid"))
+		return
+	}
+	if err != nil {
+		logrus.WithError(err).Error("error validating create user")
+		w.WriteHeader(500)
+		w.Write([]byte("an unexpected error has occurred"))
+		return
+	}
+
+	user := u.createRequestToUserModel(validatedRequest)
+
+	id, err := u.userService.Create(user)
+	if err != nil {
+		logrus.WithError(err).Error("error creating user")
+		w.WriteHeader(500)
+		w.Write([]byte("an unexpected error has occurred"))
+		return
+	}
+
+	bodyBytes, err := json.Marshal(&createUserResponse{ID: id})
+	if err != nil {
+		logrus.WithError(err).Error("error serializing create user response JSON")
+		w.WriteHeader(500)
+		w.Write([]byte("an unexpected error has occurred"))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	w.Write(bodyBytes)
+}
+
+func (u *UserController) createRequestToUserModel(req *createUserRequest) *model.User {
+	age, err := req.Age.Int64()
+	if err != nil {
+		logrus.WithError(err).Error("unexpected invalid age in user create request to model mapping!")
+	}
+
+	return &model.User{
+		FirstName:       *req.FirstName,
+		LastName:        *req.LastName,
+		Age:             int(age),
+		PhoneNumber:     *req.PhoneNumber,
+		IsPhoneVerified: *req.IsPhoneNumberVerified,
+	}
+}
+
 func (u *UserController) DeleteByID(w http.ResponseWriter, r *http.Request) {
 	id, err := u.validator.ValidateDeleteUserByID(r)
 	if errors.Is(err, blerr.ErrInvalidInput) {

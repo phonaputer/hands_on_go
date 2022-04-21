@@ -13,7 +13,7 @@ type userServerApplication struct {
 func initializeUserServerApplication() (*userServerApplication, error) {
 
 	userController := rest.NewUserController(
-		&rest.UserValidatorStubImpl{},
+		&rest.UserValidatorImpl{},
 		&logic.UserServiceStubImpl{},
 	)
 

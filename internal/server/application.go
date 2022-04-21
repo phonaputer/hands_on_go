@@ -10,6 +10,8 @@ import (
 )
 
 func Run() {
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+
 	app, err := initializeUserServerApplication()
 	if err != nil {
 		logrus.WithError(err).Fatal("failed to initialize application")
@@ -23,23 +25,25 @@ func Run() {
 
 	logrus.Info("listening on port 8080")
 
-	go func() {
-		err := s.ListenAndServe()
-		if err != nil && err != http.ErrServerClosed {
-			logrus.WithError(err).Error("error running HTTP server")
-		}
-		close(serverStopCh)
-	}()
+	go listenAndServe(s, serverStopCh)
 
 	select { // wait for the first event on either of the two channels
 	case <-signalCh:
+		err = s.Shutdown(context.Background())
+		if err != nil {
+			logrus.WithError(err).Error("error gracefully shutting down server")
+		}
 	case <-serverStopCh:
 	}
 
-	err = s.Shutdown(context.Background())
-	if err != nil {
-		logrus.WithError(err).Error("error gracefully shutting down server")
-	}
-
 	logrus.Info("exiting")
+}
+
+func listenAndServe(s *http.Server, serverStopCh chan struct{}) {
+	defer close(serverStopCh)
+
+	err := s.ListenAndServe()
+	if err != nil && err != http.ErrServerClosed {
+		logrus.WithError(err).Error("error running HTTP server")
+	}
 }

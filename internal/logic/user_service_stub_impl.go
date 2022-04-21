@@ -24,3 +24,7 @@ func (u *UserServiceStubImpl) DeleteByID(userID int) error {
 
 	return nil
 }
+
+func (u *UserServiceStubImpl) Create(user *model.User) (int, error) {
+	return 1, nil
+}
