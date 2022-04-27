@@ -2,8 +2,6 @@ package rest
 
 import (
 	"encoding/json"
-	"errors"
-	"github.com/phonaputer/hands_on_go/internal/blerr"
 	"github.com/phonaputer/hands_on_go/internal/logic"
 	"github.com/phonaputer/hands_on_go/internal/model"
 	"github.com/sirupsen/logrus"
@@ -25,41 +23,29 @@ func NewUserController(userValidator userValidator,
 	}
 }
 
-func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
+func (u *UserController) Create(w http.ResponseWriter, r *http.Request) error {
 	validatedRequest, err := u.validator.ValidateCreateUser(r)
-	if errors.Is(err, blerr.ErrInvalidInput) {
-		w.WriteHeader(400)
-		w.Write([]byte("request not valid"))
-		return
-	}
 	if err != nil {
-		logrus.WithError(err).Error("error validating create user")
-		w.WriteHeader(500)
-		w.Write([]byte("an unexpected error has occurred"))
-		return
+		return err
 	}
 
 	user := u.createRequestToUserModel(validatedRequest)
 
 	id, err := u.userService.Create(user)
 	if err != nil {
-		logrus.WithError(err).Error("error creating user")
-		w.WriteHeader(500)
-		w.Write([]byte("an unexpected error has occurred"))
-		return
+		return err
 	}
 
 	bodyBytes, err := json.Marshal(&createUserResponse{ID: id})
 	if err != nil {
-		logrus.WithError(err).Error("error serializing create user response JSON")
-		w.WriteHeader(500)
-		w.Write([]byte("an unexpected error has occurred"))
-		return
+		return err
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
 	w.Write(bodyBytes)
+
+	return nil
 }
 
 func (u *UserController) createRequestToUserModel(req *createUserRequest) *model.User {
@@ -77,64 +63,34 @@ func (u *UserController) createRequestToUserModel(req *createUserRequest) *model
 	}
 }
 
-func (u *UserController) DeleteByID(w http.ResponseWriter, r *http.Request) {
+func (u *UserController) DeleteByID(w http.ResponseWriter, r *http.Request) error {
 	id, err := u.validator.ValidateDeleteUserByID(r)
-	if errors.Is(err, blerr.ErrInvalidInput) {
-		w.WriteHeader(400)
-		w.Write([]byte("request not valid"))
-		return
-	}
 	if err != nil {
-		logrus.WithError(err).Error("error validating delete user by ID")
-		w.WriteHeader(500)
-		w.Write([]byte("an unexpected error has occurred"))
-		return
+		return err
 	}
 
 	err = u.userService.DeleteByID(id)
-	if errors.Is(err, blerr.ErrUserNotFound) {
-		w.WriteHeader(404)
-		w.Write([]byte("user not found"))
-		return
-	}
 	if err != nil {
-		logrus.WithError(err).Error("error deleting user by ID")
-		w.WriteHeader(500)
-		w.Write([]byte("an unexpected error has occurred"))
-		return
+		return err
 	}
 
 	w.WriteHeader(204)
+
+	return nil
 }
 
-func (u *UserController) GetByID(w http.ResponseWriter, r *http.Request) {
+func (u *UserController) GetByID(w http.ResponseWriter, r *http.Request) error {
 
 	// 1.
 	id, err := u.validator.ValidateGetUserByID(r)
-	if errors.Is(err, blerr.ErrInvalidInput) {
-		w.WriteHeader(400)
-		w.Write([]byte("request not valid"))
-		return
-	}
 	if err != nil {
-		logrus.WithError(err).Error("error validating get user by ID")
-		w.WriteHeader(500)
-		w.Write([]byte("an unexpected error has occurred"))
-		return
+		return err
 	}
 
 	// 2.
 	userModel, err := u.userService.GetByID(id)
-	if errors.Is(err, blerr.ErrUserNotFound) {
-		w.WriteHeader(404)
-		w.Write([]byte("user not found"))
-		return
-	}
 	if err != nil {
-		logrus.WithError(err).Error("error getting user by ID")
-		w.WriteHeader(500)
-		w.Write([]byte("an unexpected error has occurred"))
-		return
+		return err
 	}
 
 	// 3.
@@ -143,15 +99,14 @@ func (u *UserController) GetByID(w http.ResponseWriter, r *http.Request) {
 	// 4.
 	bodyBytes, err := json.Marshal(responseBody)
 	if err != nil {
-		logrus.WithError(err).Error("error serializing get user by ID response JSON")
-		w.WriteHeader(500)
-		w.Write([]byte("an unexpected error has occurred"))
-		return
+		return err
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	w.Write(bodyBytes)
+
+	return nil
 }
 
 func (u *UserController) toGetByIDResponse(user *model.User) *getUserByIDResponse {
