@@ -28,7 +28,8 @@ func (u *UserValidatorImpl) ValidateCreateUser(r *http.Request) (*createUserRequ
 	err = stringLength(err, 1, 100, req.LastName, "lastName")
 	err = stringLength(err, 1, 25, req.PhoneNumber, "phoneNumber")
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", err, blerr.ErrInvalidInput)
+		err = blerr.SetUserMsg(err, err.Error())
+		return nil, blerr.SetKind(err, blerr.KindInvalidInput)
 	}
 
 	return &req, nil
@@ -37,7 +38,8 @@ func (u *UserValidatorImpl) ValidateCreateUser(r *http.Request) (*createUserRequ
 func (u *UserValidatorImpl) ValidateGetUserByID(r *http.Request) (int, error) {
 	id, err := intPathVariable(nil, r, "id")
 	if err != nil {
-		return 0, fmt.Errorf("%e: %w", err, blerr.ErrInvalidInput)
+		err = blerr.SetUserMsg(err, err.Error())
+		return 0, blerr.SetKind(err, blerr.KindInvalidInput)
 	}
 
 	return id, nil
@@ -46,7 +48,8 @@ func (u *UserValidatorImpl) ValidateGetUserByID(r *http.Request) (int, error) {
 func (u *UserValidatorImpl) ValidateDeleteUserByID(r *http.Request) (int, error) {
 	id, err := intPathVariable(nil, r, "id")
 	if err != nil {
-		return 0, fmt.Errorf("%e: %w", err, blerr.ErrInvalidInput)
+		err = blerr.SetUserMsg(err, err.Error())
+		return 0, blerr.SetKind(err, blerr.KindInvalidInput)
 	}
 
 	return id, nil
