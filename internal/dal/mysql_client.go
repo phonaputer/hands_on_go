@@ -4,14 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-sql-driver/mysql"
+	"github.com/phonaputer/hands_on_go/internal/config"
 )
 
-func NewMySQLDB() (*sql.DB, error) {
+func NewMySQLDB(conf config.MySQL) (*sql.DB, error) {
 	dbConf := mysql.NewConfig()
-	dbConf.User = "docker"
-	dbConf.Passwd = "docker"
-	dbConf.Addr = "localhost:3306"
-	dbConf.DBName = "hands_on_go"
+	dbConf.User = conf.Username
+	dbConf.Passwd = conf.Password
+	dbConf.Addr = conf.Address
+	dbConf.DBName = conf.DB
 
 	connector, err := mysql.NewConnector(dbConf)
 	if err != nil {

@@ -1,0 +1,8 @@
+{
+  "mysql" : {
+    "username" : "docker",
+    "password" : "docker",
+    "address" : "localhost:3306",
+    "db" : "hands_on_go"
+  }
+}

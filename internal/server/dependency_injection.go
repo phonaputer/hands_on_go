@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/phonaputer/hands_on_go/internal/config"
 	"github.com/phonaputer/hands_on_go/internal/dal"
 	"github.com/phonaputer/hands_on_go/internal/logic"
 	"github.com/phonaputer/hands_on_go/internal/rest"
@@ -12,9 +13,9 @@ type userServerApplication struct {
 	userServerHTTPHandler http.Handler
 }
 
-func initializeUserServerApplication() (*userServerApplication, error) {
+func initializeUserServerApplication(conf *config.HOGConfig) (*userServerApplication, error) {
 
-	db, err := dal.NewMySQLDB()
+	db, err := dal.NewMySQLDB(conf.MySQL)
 	if err != nil {
 		return nil, fmt.Errorf("new MySQL DB: %w", err)
 	}

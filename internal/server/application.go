@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/phonaputer/hands_on_go/internal/config"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
@@ -12,7 +13,12 @@ import (
 func Run() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 
-	app, err := initializeUserServerApplication()
+	conf, err := config.LoadConfig()
+	if err != nil {
+		logrus.WithError(err).Fatal("failed to load config")
+	}
+
+	app, err := initializeUserServerApplication(conf)
 	if err != nil {
 		logrus.WithError(err).Fatal("failed to initialize application")
 	}

@@ -6,5 +6,6 @@ format:
 
 build: format compile
 
+run: export HOG_CONFIG_PATH=./configs/local_config.json
 run:
 	./server_exe
