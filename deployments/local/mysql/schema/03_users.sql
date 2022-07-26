@@ -1,3 +1,3 @@
-CREATE USER 'docker'@'%' IDENTIFIED BY 'docker';
+CREATE USER 'dockeruser'@'%' IDENTIFIED BY 'dockerpass';
 
-GRANT ALL PRIVILEGES ON *.* TO 'docker'@'%';
+GRANT ALL PRIVILEGES ON *.* TO 'dockeruser'@'%';
