@@ -1,0 +1,170 @@
+# "Hands on Go" Pre-assignment
+
+Hi! Thank you for your interest in joining the Hands on Go workshop.
+In order to get the most out of the workshop, attendees need to have a certain minimum knowledge of Go (and the other technologies used in the workshop).
+This pre-assignment is intended to verify that the attendee has this knowledge (both for the trainer's benefit and for the attendee's).
+
+## What should I know before doing this assignment?
+
+The knowledge which this pre-assignment is intended to check is the following:
+
+### Attendees should have...
+* ...the ability to write a simple Go program from scratch.
+* ...basic familiarity with the Go CLI (`go build`, `go run`, `go test`, etc.).
+* ...basic familiarity with Go HTTP standard libraries  (`http.Handler` interface and `http.Server` struct type).
+* ...basic familiarity with the Go `encoding/json` standard library.
+* ...basic familiarity with at least one data store client library.
+* ...the ability to run Docker containers on their local device.
+* ...the ability to write simple SQL queries to SELECT and INSERT.
+
+Also, just to add, this is what you don't need to know:
+#### Attendees do NOT need to have...
+
+* ...detailed understanding of Go HTTP handlers, JSON serialization, data store client libraries, etc.
+* ...knowledge of how to write Dockerfiles or create new Docker images.
+* ...detailed knowledge of MySQL or SQL queries.
+* ...knowledge of patterns for structuring Go applications (this is the topic you will learn about in the workshop).
+
+## Wait a minute - I don't know some of these things!
+
+No problem! 
+If you don't know about any of the topics from the "Attendees should have..." list - this assignment is your opportunity to study up on them!
+
+As long as you can complete this assignment on your own without help, you should be ready for the course.
+If you don't already know the above, just go ahead and learn it!
+
+Here are some helpful links for learning about some of the more Go related topics above:
+
+* Go HTTP server: https://www.digitalocean.com/community/tutorials/how-to-make-an-http-server-in-go
+* Go JSON serialization: https://www.sohamkamani.com/golang/json/
+* Go standard library database SQL package: http://go-database-sql.org/index.html
+* One MySQL driver library you could use with the standard lib SQL package: https://github.com/go-sql-driver/mysql#usage
+
+## Ok, I'm ready for the assignment. What is it?
+
+The pre-assignment for this course is to write an HTTP server application with one endpoint for "Get User." 
+This endpoint should select a row from a MySQL table by ID and return the data in JSON format in the response body.
+This application does not need to handle creation, deletion, or update functionality. Just selects/reads.
+
+To test your application, please run the applicatio and then execute the integration tests packaged in this repository.
+If the tests are passing, your code works.
+
+Time for some specifics.
+
+### The HTTP Server
+
+The HTTP server should listen on port 8080 of localhost. 
+
+### The Get User Endpoint
+
+The endpoint to get a User should conform to the following spec.
+
+| URL                            | HTTP Method |
+|--------------------------------|-------------|
+| http://localhost:8080/get-user | any         |
+
+#### Query String Parameters
+
+| Parameter | Format  | Description                          | Optional |
+|-----------|---------|--------------------------------------|----------|
+| id        | integer | Unique integer ID of a User in MySQL | No       |
+
+
+#### Example Request
+```
+curl 'localhost:8080/get-user?id=1'
+```
+
+#### Response Code
+Success - `200` (with JSON body)
+
+All error cases - `500` (no response body)
+
+#### Success Response Body JSON Format
+
+| JSON Key   | JSON Type | Description                             | Optional |
+|------------|-----------|-----------------------------------------|----------|
+| id         | Number    | Unique integer ID of a User in MySQL    | No       |
+| first_name | String    | Human language given name of the User.  | No       |
+| last_name  | String    | Human language family name of the User. | No       |
+
+#### Example Success Response
+
+```
+200 OK
+{
+   "id" : 123,
+   "first_name" : "Rakuten",
+   "last_name" : "Gopher"
+}
+```
+
+### The MySQL Database
+
+The MySQL database comes packaged as a Docker container which can be run with Docker Compose.
+
+It contains only one database with one table.
+
+#### How to run MySQL
+
+The MySQL Dockerized setup can be run by navigating to the `deployments/local` directory and running the following command:
+
+```
+$ docker-compose up
+```
+
+This should be enough to get it running. 
+If this does not work, please contact the trainer.
+
+Now you should have MySQL running on port `3306` of `localhost`.
+
+#### Schema 
+
+The MySQL schema you should use is `hands_on_go`.
+
+#### Tables
+
+There is only one table in the `hands_on_go` schema. This is the `users` table.
+
+It has the following schema:
+
+```sql
+CREATE TABLE `hands_on_go`.`users` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `age` int(10) unsigned NOT NULL,
+  `phone_number` varchar(255) NOT NULL,
+  `phone_verification_status` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+```
+
+But for this pre-assignment, the only important columns are `id`, `first_name`
+, and `last_name`.
+
+#### MySQL Users
+
+The Dockerized MySQL comes with one user `dockeruser` for whom the password is `dockerpass`.
+This user has the required SELECT permissions for completing this assignment.
+
+## How to run the integration tests and verify my code?
+
+The integration tests can be run with the following command:
+
+```
+# in the root directory of this repository
+go test -v test/integration_test.go
+```
+
+Note that you need to run your HTTP server application and have it listen on port 8080 of localhost before starting the tests. 
+Otherwise the tests will not be able to connect to your server and they will fail.
+
+If all tests are passing, then your code should be working!
+
+## The tests are passing, what should I do now?
+
+Please push your code to a branch on the origin and open a pull request from your branch into master branch.
+Then, please send a link to the pull request to the trainer for verification.
