@@ -168,3 +168,5 @@ If all tests are passing, then your code should be working!
 
 Please push your code to a branch on the origin and open a pull request from your branch into master branch.
 Then, please send a link to the pull request to the trainer for verification.
+
+No worries if your code is looking a bit dirty or unmaintainable, this is one of the learning targets of the workshop.  
