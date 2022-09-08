@@ -6,12 +6,12 @@ In order to learn the concepts presented in the workshop, attendees need to have
 This pre-assignment is intended to verify that the attendee has this knowledge.
 
 ### Table of Contents
-1. [What should I know before doing this assignment?](#what-should-i-know-before-doing-this-assignment)
-2. [What is the assignment?](#what-is-the-assignment)
-3. [How to run the integration tests and verify my code?](#how-to-run-the-integration-tests-and-verify-my-code)
-4. [How to submit my assignment?](#how-to-submit-my-assignment)
+1. [What should I know before doing this assignment?](#pre-knowledge)
+2. [What is the assignment?](#assignment)
+3. [How to run the integration tests and verify my code?](#verify)
+4. [How to submit my assignment?](#submit)
 
-# What should I know before doing this assignment?
+# What should I know before doing this assignment? <a name="pre-knowledge"></a>
 
 The knowledge which this pre-assignment is intended to check is the following:
 
@@ -61,7 +61,7 @@ For IDEs, there are a few different options. Some popular choices are the follow
 For Docker and Docker-Compose, you can install them by following the instructions at the following link.
 Installing in this way will include both `docker` and `docker-compose`: https://docs.docker.com/get-docker/
 
-# What is the assignment?
+# What is the assignment? <a name="assignment"></a>
 
 The pre-assignment for this course is to write a simple HTTP server application with one endpoint for "Get User." 
 This endpoint should select a row from a MySQL table by ID and return the data in JSON format in the response body.
@@ -177,7 +177,7 @@ For this pre-assignment, the only important columns are `id`, `first_name`
 The Dockerized MySQL comes with one user `dockeruser` for whom the password is `dockerpass`.
 This user has the required SELECT permissions for completing this assignment.
 
-# How to run the integration tests and verify my code?
+# How to run the integration tests and verify my code? <a name="verify"></a>
 
 The integration tests can be run with the following command:
 
@@ -192,7 +192,7 @@ Otherwise the tests will not be able to connect to your server and they will fai
 
 If all tests are passing, then your code should be working!
 
-# How to submit my assignment?
+# How to submit my assignment? <a name="submit"></a>
 
 Please push your code to a branch on the origin of this repository.
 The branch name should include your name at the beginning followed by a forward slash, then whatever name you would like: `${YOUR_NAME}/${BRANCH_NAME}`. 
