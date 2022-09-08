@@ -1,4 +1,4 @@
-module github.com/phonaputer/hands_on_go
+module pre_assignment
 
 go 1.18
 

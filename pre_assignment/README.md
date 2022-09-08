@@ -5,7 +5,13 @@ In order to learn the concepts presented in the workshop, attendees need to have
 (and the other technologies used in the workshop).
 This pre-assignment is intended to verify that the attendee has this knowledge.
 
-## What should I know before doing this assignment?
+### Table of Contents
+1. [What should I know before doing this assignment?](#what-should-i-know-before-doing-this-assignment)
+2. [What is the assignment?](#what-is-the-assignment)
+3. [How to run the integration tests and verify my code?](#how-to-run-the-integration-tests-and-verify-my-code)
+4. [How to submit my assignment?](#how-to-submit-my-assignment)
+
+# What should I know before doing this assignment?
 
 The knowledge which this pre-assignment is intended to check is the following:
 
@@ -55,7 +61,7 @@ For IDEs, there are a few different options. Some popular choices are the follow
 For Docker and Docker-Compose, you can install them by following the instructions at the following link.
 Installing in this way will include both `docker` and `docker-compose`: https://docs.docker.com/get-docker/
 
-## Ok, I'm ready for the assignment. What is it?
+# What is the assignment?
 
 The pre-assignment for this course is to write a simple HTTP server application with one endpoint for "Get User." 
 This endpoint should select a row from a MySQL table by ID and return the data in JSON format in the response body.
@@ -65,7 +71,10 @@ To verify your application is working correctly, please run the application
 and then execute the integration tests packaged in this repository.
 If the tests are passing, your code works.
 
-The specific requirements are described below. 
+You may use any libraries you like and structure the code however you please.
+You will not be graded on cleanness/consistency/etc. only correctness and understanding of Go.
+
+The specific requirements for the server are described below. 
 If you have any questions about these requirements, please feel free to contact the trainer to ask.
 
 ### The HTTP Server
@@ -168,7 +177,7 @@ For this pre-assignment, the only important columns are `id`, `first_name`
 The Dockerized MySQL comes with one user `dockeruser` for whom the password is `dockerpass`.
 This user has the required SELECT permissions for completing this assignment.
 
-## How to run the integration tests and verify my code?
+# How to run the integration tests and verify my code?
 
 The integration tests can be run with the following command:
 
@@ -183,10 +192,14 @@ Otherwise the tests will not be able to connect to your server and they will fai
 
 If all tests are passing, then your code should be working!
 
-## The tests are passing, what should I do now?
+# How to submit my assignment?
 
-Please push your code to a branch on the origin and open a pull request from your branch into master branch.
-Then, please send a link to the pull request to the trainer for verification.
+Please push your code to a branch on the origin of this repository.
+The branch name should include your name at the beginning followed by a forward slash, then whatever name you would like: `${YOUR_NAME}/${BRANCH_NAME}`. 
+For example: `jane.doe/pre_assignment`.
+
+Once your branch is pushed, open a pull request from your branch into `master` branch.
+Finally, please send a link to the pull request to the trainer for verification.
 
 No worries if your code is looking a dirty or unmaintainable, 
 improving this is one of the learning targets of the workshop.  
