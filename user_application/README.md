@@ -1,6 +1,6 @@
-# "Hands-on-Go" User Server
+# "Hands-on-Go" User Application
 
-This is the directory in which you will write the code for the User Server you'll be developing in this workshop.
+This is the directory in which you will write the code for the User Application you'll be developing in this workshop.
 
 Please create a branch for your code using the following format: `${your_name}/${workshop_start_date_yyyyMM}`.
 
@@ -8,7 +8,7 @@ For example, for an attendee named Jane Doe who attended the September 2022 sess
 
 ## Dependencies
 
-The User Server uses the same Dockerized MySQL from the pre-assignment.
+The User Application uses the same Dockerized MySQL from the pre-assignment.
 A Docker Compose file for this can be found in the `deployments/local` subdirectory of this directory.
 
 ## How to find the instructor's code
