@@ -1,4 +1,4 @@
-# "Hands on Go" Pre-assignment
+# "Hands-on-Go" Pre-assignment
 
 Hi! Thank you for your interest in joining the Hands on Go workshop.
 In order to learn the concepts presented in the workshop, attendees need to have a certain minimum knowledge of Go 
