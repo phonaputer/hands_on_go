@@ -22,3 +22,7 @@ func (u *UserServiceStubImpl) GetByID(id int) (*User, error) {
 func (u *UserServiceStubImpl) CreateUser(user *User) (int, error) {
 	return 123, nil
 }
+
+func (u *UserServiceStubImpl) DeleteByID(id int) error {
+	return nil
+}

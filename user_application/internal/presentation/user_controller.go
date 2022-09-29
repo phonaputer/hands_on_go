@@ -130,6 +130,46 @@ func (u *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	w.Write(bodyBytes)
 }
 
+func (u *UserController) DeleteUserByID(w http.ResponseWriter, r *http.Request) {
+
+	// 1. Get ID from request (query string)
+	id, err := u.validator.ValidateDeleteUserByID(r)
+
+	// 1.1. if this is invalid -> return 400 response
+	if errors.Is(err, errInvalidInput) {
+		logrus.WithError(err).Error("invalid input to delete user by ID")
+		w.WriteHeader(400)
+		return
+	}
+
+	// unexpected error occurred -> return 500
+	if err != nil {
+		logrus.WithError(err).Error("unexpected validation error in delete user by ID")
+		w.WriteHeader(500)
+		return
+	}
+
+	// 2. Pass ID to business logic layer & get back a user
+	err = u.userService.DeleteByID(id)
+
+	// 2.1. If user is not found -> return 404 response
+	if errors.Is(err, logic.ErrNotFound) {
+		logrus.WithError(err).Error("user not found in delete user by ID")
+		w.WriteHeader(404)
+		return
+	}
+
+	// unexpected error occurred -> return 500
+	if err != nil {
+		logrus.WithError(err).Error("unexpected service error in delete user by ID")
+		w.WriteHeader(500)
+		return
+	}
+
+	// 3. write response
+	w.WriteHeader(204)
+}
+
 func (u *UserController) toGetByIDResponse(user *logic.User) *getUserByIDResponse {
 	return &getUserByIDResponse{
 		FirstName:       user.FirstName,

@@ -11,6 +11,7 @@ func NewUserAppRootHandler(userController *UserController) http.Handler {
 
 	r.HandleFunc("/users", userController.GetUserByID).Methods("GET")
 	r.HandleFunc("/users", userController.CreateUser).Methods("POST")
+	r.HandleFunc("/users", userController.DeleteUserByID).Methods("DELETE")
 
 	return r
 }

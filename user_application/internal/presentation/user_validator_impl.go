@@ -13,6 +13,10 @@ import (
 
 type UserValidatorImpl struct{}
 
+func (u *UserValidatorImpl) ValidateDeleteUserByID(r *http.Request) (int, error) {
+	return u.ValidateGetUserByID(r)
+}
+
 func (u *UserValidatorImpl) ValidateGetUserByID(r *http.Request) (int, error) {
 
 	// 1. does query string contain "id"

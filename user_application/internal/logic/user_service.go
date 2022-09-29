@@ -11,4 +11,7 @@ type UserService interface {
 
 	// CreateUser returns the ID of the newly created user.
 	CreateUser(user *User) (int, error)
+
+	// DeleteByID returns ErrNotFound if a user with this ID is not found.
+	DeleteByID(id int) error
 }
