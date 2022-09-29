@@ -1,13 +1,16 @@
 package presentation
 
-import "net/http"
+import (
+	"github.com/gorilla/mux"
+	"net/http"
+)
 
 // NewUserAppRootHandler initializes the top-level HTTP request router for User Application.
-func NewUserAppRootHandler() http.Handler {
+func NewUserAppRootHandler(userController *UserController) http.Handler {
+	r := mux.NewRouter()
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(200)
-		w.Write([]byte("Hello world!"))
-	})
+	r.HandleFunc("/users", userController.GetUserByID).Methods("GET")
+	r.HandleFunc("/users", userController.CreateUser).Methods("POST")
 
+	return r
 }

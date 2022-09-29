@@ -23,6 +23,60 @@ func NewUserController(
 	}
 }
 
+func (u *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
+
+	// 1. parse & validate request data
+	reqData, err := u.validator.ValidateCreateUser(r)
+
+	// if anything is invalid -> return 400 response
+	if errors.Is(err, errInvalidInput) {
+		logrus.WithError(err).Error("invalid input to create user")
+		w.WriteHeader(400)
+		return
+	}
+
+	// unexpected error occurred -> return 500
+	if err != nil {
+		logrus.WithError(err).Error("unexpected validation error in create user")
+		w.WriteHeader(500)
+		return
+	}
+
+	// 2. Map create request data to User logic struct
+	user := &logic.User{
+		FirstName:     *reqData.FirstName,
+		LastName:      *reqData.LastName,
+		Age:           *reqData.Age,
+		PhoneNumber:   *reqData.PhoneNumber,
+		PhoneVerified: *reqData.IsPhoneVerified,
+	}
+
+	// 3. Create user in business logic layer
+	id, err := u.userService.CreateUser(user)
+
+	// unexpected error occurred -> return 500
+	if err != nil {
+		logrus.WithError(err).Error("unexpected error in create user business logic")
+		w.WriteHeader(500)
+		return
+	}
+
+	// 4. Map user ID to create user response
+	responseBody := createUserResponse{ID: id}
+
+	bodyBytes, err := json.Marshal(responseBody)
+	if err != nil {
+		logrus.WithError(err).Error("error serializing JSON in create user")
+		w.WriteHeader(500)
+		return
+	}
+
+	// 5. Write response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	w.Write(bodyBytes)
+}
+
 func (u *UserController) GetUserByID(w http.ResponseWriter, r *http.Request) {
 
 	// 1. Get ID from request (query string)

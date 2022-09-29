@@ -1,6 +1,7 @@
 package userapp
 
 import (
+	"hands_on_go/internal/logic"
 	"hands_on_go/internal/presentation"
 	"net/http"
 )
@@ -12,7 +13,12 @@ type userApp struct {
 func newUserApp() (*userApp, error) {
 	var app userApp
 
-	app.rootHandler = presentation.NewUserAppRootHandler()
+	userController := presentation.NewUserController(
+		&presentation.UserValidatorImpl{},
+		&logic.UserServiceStubImpl{},
+	)
+
+	app.rootHandler = presentation.NewUserAppRootHandler(userController)
 
 	return &app, nil
 }
