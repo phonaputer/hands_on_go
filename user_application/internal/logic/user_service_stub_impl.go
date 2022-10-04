@@ -1,5 +1,10 @@
 package logic
 
+import (
+	"errors"
+	"hands_on_go/internal/uaerr"
+)
+
 type UserServiceStubImpl struct{}
 
 func (u *UserServiceStubImpl) GetByID(id int) (*User, error) {
@@ -24,5 +29,9 @@ func (u *UserServiceStubImpl) CreateUser(user *User) (int, error) {
 }
 
 func (u *UserServiceStubImpl) DeleteByID(id int) error {
-	return nil
+	err := errors.New("user not found for some reason")
+	err = uaerr.SetType(err, uaerr.TypeNotFound)
+	err = uaerr.SetUserMsg(err, "user not found")
+
+	return err
 }

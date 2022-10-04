@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/exp/constraints"
+	"hands_on_go/internal/uaerr"
 	"io"
 	"net/http"
 	"strconv"
@@ -21,15 +22,19 @@ func (u *UserValidatorImpl) ValidateGetUserByID(r *http.Request) (int, error) {
 
 	// 1. does query string contain "id"
 	if !r.URL.Query().Has("id") {
-		return 0, errInvalidInput // TODO add a better message
+		err := uaerr.NewUserMsg("id is required")
+		err = uaerr.SetType(err, uaerr.TypeInvalidInput)
+
+		return 0, err
 	}
 
 	// 2. is query string "id" an integer
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
-		logrus.WithError(err).Trace("error parsing user id from query string")
+		err = uaerr.SetUserMsg(err, "id must be an integer")
+		err = uaerr.SetType(err, uaerr.TypeInvalidInput)
 
-		return 0, errInvalidInput // TODO add a better message
+		return 0, err
 	}
 
 	return id, nil
@@ -60,7 +65,10 @@ func (u *UserValidatorImpl) ValidateCreateUser(r *http.Request) (*createUserRequ
 
 	// 5.A. return error result if there was a validation problem
 	if err != nil {
-		return nil, fmt.Errorf("%e : %w", err, errInvalidInput)
+		err = uaerr.SetUserMsg(err, err.Error())
+		err = uaerr.SetType(err, uaerr.TypeInvalidInput)
+
+		return nil, err
 	}
 
 	// 5.B. return success result

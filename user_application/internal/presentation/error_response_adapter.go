@@ -1,9 +1,8 @@
 package presentation
 
 import (
-	"errors"
 	"github.com/sirupsen/logrus"
-	"hands_on_go/internal/logic"
+	"hands_on_go/internal/uaerr"
 	"net/http"
 )
 
@@ -28,12 +27,25 @@ func writeErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
 }
 
 func getCodeAndMessage(err error) (int, string) {
-	if errors.Is(err, logic.ErrNotFound) {
-		return 404, "not found"
+	errType := uaerr.GetType(err)
+
+	switch errType {
+	case uaerr.TypeInvalidInput:
+		return 400, getUserMsgOrDefault(err, "invalid request")
+
+	case uaerr.TypeNotFound:
+		return 404, getUserMsgOrDefault(err, "not found")
+	default:
+		return 500, "internal server error"
 	}
-	if errors.Is(err, errInvalidInput) {
-		return 400, "invalid request"
+}
+
+func getUserMsgOrDefault(err error, defaultMsg string) string {
+	msg, hasMsg := uaerr.GetUserMsg(err)
+
+	if hasMsg {
+		return msg
 	}
 
-	return 500, "internal server error"
+	return defaultMsg
 }
