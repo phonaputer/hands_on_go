@@ -9,9 +9,14 @@ import (
 func NewUserAppRootHandler(userController *UserController) http.Handler {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/users", userController.GetUserByID).Methods("GET")
-	r.HandleFunc("/users", userController.CreateUser).Methods("POST")
-	r.HandleFunc("/users", userController.DeleteUserByID).Methods("DELETE")
+	//r.HandleFunc("/users", userController.GetUserByID).Methods("GET")
+	handleErr(r, "/users", userController.GetUserByID).Methods("GET")
+	handleErr(r, "/users", userController.CreateUser).Methods("POST")
+	handleErr(r, "/users", userController.DeleteUserByID).Methods("DELETE")
 
 	return r
+}
+
+func handleErr(r *mux.Router, path string, handler ErrHTTPHandler) *mux.Route {
+	return r.Handle(path, WithErrResponse(handler))
 }
