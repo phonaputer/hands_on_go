@@ -109,7 +109,7 @@ func validateSize[T constraints.Ordered](err error, value *T, min T, max T, fiel
 	}
 
 	if *value < min || max < *value {
-		return fmt.Errorf("%s has invalid length", fieldName)
+		return fmt.Errorf("%s has invalid size", fieldName)
 	}
 
 	return nil
