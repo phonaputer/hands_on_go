@@ -10,7 +10,12 @@ import (
 )
 
 func Run() {
-	app, err := newUserApp()
+	conf, err := loadConfig()
+	if err != nil {
+		logrus.WithError(err).Fatal("could not read config")
+	}
+
+	app, err := newUserApp(conf)
 	if err != nil {
 		logrus.WithError(err).Fatal("failed to initialize application")
 	}
@@ -33,13 +38,19 @@ func Run() {
 
 	// wait for the first event on either of the two channels
 	select {
-	case <-signalCh:
+	case sig := <-signalCh:
+		logrus.Infof("shutting down server in response to signal: '%s'", sig.String())
+
 		err = s.Shutdown(context.Background())
 		if err != nil {
 			logrus.WithError(err).Error("error stopping HTTP server")
 		}
 	case <-serverStopCh:
 	}
+
+	logrus.Info("Closing application dependencies.")
+	closeUserApp(app)
+	logrus.Info("Dependencies closed.")
 
 	logrus.Info("Shut down complete. Exiting.")
 }
