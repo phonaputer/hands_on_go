@@ -3,16 +3,18 @@ package userapp
 import (
 	"fmt"
 	"net/http"
+	"userapp/internal/userapp/logic"
 	"userapp/internal/userapp/restapi"
 )
 
 func Run() {
-	usersController := restapi.NewUsersController()
-	router := restapi.NewRootRouter(usersController)
+	restAPI := restapi.NewComponent(&restapi.Dependencies{
+		UserCRUD: logic.NewDummyUserCRUD(),
+	})
 
 	s := &http.Server{
 		Addr:    ":8080",
-		Handler: router,
+		Handler: restAPI.RootRouter,
 	}
 
 	fmt.Println("listening on port 8080")
