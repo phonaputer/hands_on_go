@@ -2,28 +2,24 @@ package logic
 
 import (
 	"context"
-	"time"
 )
 
 type UserCRUD interface {
 	GetByID(ctx context.Context, userID int) (*User, error)
 }
 
-type DummyUserCRUD struct{}
-
-func NewDummyUserCRUD() DummyUserCRUD {
-	return DummyUserCRUD{}
+type UserCRUDImpl struct {
+	repo UserRepository
 }
 
-func (c DummyUserCRUD) GetByID(ctx context.Context, userID int) (*User, error) {
-	return &User{
-		ID:         userID,
-		FirstName:  "test",
-		MiddleName: new("middle"),
-		LastName:   "last",
-		Age:        123,
-		Email:      "123@example.com",
-		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now().Add(time.Minute),
-	}, nil
+func newUserCRUDImpl(
+	repo UserRepository,
+) *UserCRUDImpl {
+	return &UserCRUDImpl{
+		repo: repo,
+	}
+}
+
+func (c *UserCRUDImpl) GetByID(ctx context.Context, userID int) (*User, error) {
+	return c.repo.GetByID(ctx, userID)
 }

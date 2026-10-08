@@ -3,13 +3,23 @@ package userapp
 import (
 	"fmt"
 	"net/http"
+	"userapp/internal/userapp/dal"
 	"userapp/internal/userapp/logic"
 	"userapp/internal/userapp/restapi"
 )
 
+// curl localhost:8080/users/123
+// -> should return the dummy user JSON
+
 func Run() {
+	dataAccessLayer := dal.NewComponent(&dal.Dependencies{})
+
+	logicLayer := logic.NewComponent(&logic.Dependencies{
+		UsersRepository: dataAccessLayer.MySQLUserRepository,
+	})
+
 	restAPI := restapi.NewComponent(&restapi.Dependencies{
-		UserCRUD: logic.NewDummyUserCRUD(),
+		UserCRUD: logicLayer.UserCRUDImpl,
 	})
 
 	s := &http.Server{
