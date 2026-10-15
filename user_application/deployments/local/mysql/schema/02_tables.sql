@@ -11,4 +11,3 @@ CREATE TABLE `hands_on_go`.`users` (
   `updated_at`  timestamp        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8mb4;
-

@@ -6,13 +6,27 @@ import (
 	"userapp/internal/userapp/dal"
 	"userapp/internal/userapp/logic"
 	"userapp/internal/userapp/restapi"
+
+	_ "github.com/go-sql-driver/mysql"
+
+	"github.com/jmoiron/sqlx"
 )
 
-// curl localhost:8080/users/123
-// -> should return the dummy user JSON
+// curl localhost:8080/users/1
+// -> should return DB user JSON
 
 func Run() {
-	dataAccessLayer := dal.NewComponent(&dal.Dependencies{})
+	db, err := sqlx.Open("mysql", "dockeruser:dockerpass@tcp(localhost:3306)/hands_on_go?parseTime=true")
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	dataAccessLayer := dal.NewComponent(&dal.Dependencies{
+		DB: db,
+	})
+
+	// AND line 10
 
 	logicLayer := logic.NewComponent(&logic.Dependencies{
 		UsersRepository: dataAccessLayer.MySQLUserRepository,
@@ -29,7 +43,7 @@ func Run() {
 
 	fmt.Println("listening on port 8080")
 
-	err := s.ListenAndServe()
+	err = s.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}
