@@ -1,11 +1,27 @@
 package restapi
 
-import "net/http"
+import (
+	"net/http"
+)
 
-func NewRouter(usersController *UsersController) http.Handler {
-	router := http.NewServeMux()
+func NewRouter(usersController *UsersController, errorResponseAdapter *errorResponseAdapter) http.Handler {
+	m := muxer{
+		router:               http.NewServeMux(),
+		errorResponseAdapter: errorResponseAdapter,
+	}
 
-	router.HandleFunc("GET /users/{user_id}", usersController.GetUser)
+	m.HandleErrFunc("GET /users/{user_id}", usersController.GetUser)
 
-	return router
+	return m.router
+}
+
+type muxer struct {
+	router               *http.ServeMux
+	errorResponseAdapter *errorResponseAdapter
+}
+
+func (m *muxer) HandleErrFunc(path string, handler errHTTPHandlerFunc) {
+	wrappedHandler := m.errorResponseAdapter.WithErrResp(handler)
+
+	m.router.HandleFunc(path, wrappedHandler)
 }

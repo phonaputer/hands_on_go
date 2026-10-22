@@ -22,7 +22,7 @@ func newMySQLUserRepository(db *sqlx.DB) *MySQLUserRepository {
 type userMySQLRow struct {
 	ID         int       `db:"id"`
 	FirstName  string    `db:"first_name"`
-	MiddleName string    `db:"middle_name"`
+	MiddleName *string   `db:"middle_name"`
 	LastName   string    `db:"last_name"`
 	Age        int       `db:"age"`
 	Email      string    `db:"email"`
@@ -42,7 +42,7 @@ func (r *MySQLUserRepository) GetByID(ctx context.Context, id int) (*logic.User,
 	return &logic.User{
 		ID:         row.ID,
 		FirstName:  row.FirstName,
-		MiddleName: &row.MiddleName,
+		MiddleName: row.MiddleName,
 		LastName:   row.LastName,
 		Age:        row.Age,
 		Email:      row.Email,

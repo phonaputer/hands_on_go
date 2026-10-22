@@ -8,8 +8,9 @@ import (
 type Component struct {
 	RootRouter http.Handler
 
-	usersController *UsersController
-	jsonUsersMapper jsonUsersMapper
+	usersController      *UsersController
+	jsonUsersMapper      jsonUsersMapper
+	errorResponseAdapter *errorResponseAdapter
 }
 
 type Dependencies struct {
@@ -24,8 +25,9 @@ func NewComponent(d *Dependencies) *Component {
 		d.UserCRUD,
 		&c.jsonUsersMapper,
 	)
+	c.errorResponseAdapter = newErrorResponseAdapter()
 
-	c.RootRouter = NewRouter(c.usersController)
+	c.RootRouter = NewRouter(c.usersController, c.errorResponseAdapter)
 
 	return &c
 }

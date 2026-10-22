@@ -23,34 +23,28 @@ func NewUsersController(
 	}
 }
 
-func (c *UsersController) GetUser(w http.ResponseWriter, r *http.Request) {
+func (c *UsersController) GetUser(w http.ResponseWriter, r *http.Request) error {
 	userIDStr := r.PathValue("user_id")
 
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		fmt.Println("An error occured: " + err.Error())
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("ERROR: User ID must be integer!"))
-		return
+		return fmt.Errorf("convert id to integer: %w", err)
 	}
 
 	user, err := c.crud.GetByID(r.Context(), userID)
 	if err != nil {
-		fmt.Println("An error occured: " + err.Error())
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		return fmt.Errorf("get by id: %w", err)
 	}
 
 	response := c.mapper.User2UserResponse(user)
 
 	jsonString, err := json.Marshal(response)
 	if err != nil {
-		fmt.Println("An error occured: " + err.Error())
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		return fmt.Errorf("json marshal response: %w", err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonString)
+	return nil
 }
