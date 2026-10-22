@@ -12,9 +12,6 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// curl localhost:8080/users/1
-// -> should return DB user JSON
-
 func Run() {
 	db, err := sqlx.Open("mysql", "dockeruser:dockerpass@tcp(localhost:3306)/hands_on_go?parseTime=true")
 	if err != nil {
@@ -25,8 +22,6 @@ func Run() {
 	dataAccessLayer := dal.NewComponent(&dal.Dependencies{
 		DB: db,
 	})
-
-	// AND line 10
 
 	logicLayer := logic.NewComponent(&logic.Dependencies{
 		UsersRepository: dataAccessLayer.MySQLUserRepository,

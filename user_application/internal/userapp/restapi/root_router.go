@@ -4,10 +4,25 @@ import "net/http"
 
 func NewRootRouter(
 	usersController *UsersController,
+	errorResponseAdapter *errorResponseAdapter,
 ) http.Handler {
-	router := http.NewServeMux()
+	m := muxer{
+		router:               http.NewServeMux(),
+		errorResponseAdapter: errorResponseAdapter,
+	}
 
-	router.HandleFunc("GET /users/{user_id}", usersController.GetUser)
+	m.HandleErrFunc("GET /users/{user_id}", usersController.GetUser)
 
-	return router
+	return m.router
+}
+
+type muxer struct {
+	router               *http.ServeMux
+	errorResponseAdapter *errorResponseAdapter
+}
+
+func (m *muxer) HandleErrFunc(path string, handler errHTTPHandlerFunc) {
+	wrappedHandler := m.errorResponseAdapter.WithErrResp(handler)
+
+	m.router.HandleFunc(path, wrappedHandler)
 }
