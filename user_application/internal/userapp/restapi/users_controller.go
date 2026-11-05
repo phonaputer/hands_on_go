@@ -28,7 +28,8 @@ func (c *UsersController) GetUser(w http.ResponseWriter, r *http.Request) error 
 
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		return fmt.Errorf("%w convert id to integer: %w", logic.ErrInvalidInput, err)
+		err = fmt.Errorf("%w: convert id to integer: %w", logic.ErrInvalidInput, err)
+		return logic.SetEndUserMsg(err, "User ID must be an integers")
 	}
 
 	user, err := c.crud.GetByID(r.Context(), userID)

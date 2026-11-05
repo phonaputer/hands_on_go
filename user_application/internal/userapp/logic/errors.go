@@ -18,3 +18,26 @@ func NewEndUserMsgError(msg string) error {
 		endUserMessage: msg,
 	}
 }
+
+func SetEndUserMsg(err error, msg string) error {
+	if err == nil {
+		return NewEndUserMsgError(msg)
+	}
+
+	return &endUserMsgError{
+		error:          err,
+		endUserMessage: msg,
+	}
+}
+
+func (e *endUserMsgError) Unwrap() error {
+	return e.error
+}
+
+func GetEndUserMsg(err error) (string, bool) {
+	if endUserMsgErr, ok := errors.AsType[*endUserMsgError](err); ok {
+		return endUserMsgErr.endUserMessage, true
+	}
+
+	return "", false
+}
