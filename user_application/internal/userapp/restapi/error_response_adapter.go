@@ -2,7 +2,7 @@ package restapi
 
 import (
 	"errors"
-	"fmt"
+	"log/slog"
 	"net/http"
 	"userapp/internal/userapp/logic"
 )
@@ -22,15 +22,14 @@ func (e *errorResponseAdapter) WithErrResp(next errHTTPHandlerFunc) http.Handler
 			return
 		}
 
-		fmt.Println("error handling request: " + err.Error())
-
-		e.writeResponse(err, w)
+		e.writeResponse(err, w, r)
 	}
 }
 
 func (e *errorResponseAdapter) writeResponse(
 	err error,
 	w http.ResponseWriter,
+	r *http.Request,
 ) {
 	switch {
 	case errors.Is(err, logic.ErrUserNotFound):
@@ -43,7 +42,14 @@ func (e *errorResponseAdapter) writeResponse(
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	if err.HasEndUserMessage {
-		w.Write([]byte(err.EndUserMessage))
+	msg, ok := logic.GetEndUserMsg(err)
+	if ok {
+		w.Write([]byte(msg + "\n"))
 	}
+
+	slog.Error(
+		"Error handling request",
+		slog.String("path", r.Pattern),
+		slog.String("err", err.Error()),
+	)
 }

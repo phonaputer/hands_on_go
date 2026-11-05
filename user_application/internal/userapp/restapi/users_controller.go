@@ -8,11 +8,6 @@ import (
 	"userapp/internal/userapp/logic"
 )
 
-// TODO
-// 1. Cleanup error handling boilerplate
-// 2. Use logging framework instead of print statements
-// 3. Add "not found" response instead of "500" when user is not found
-
 type UsersController struct {
 	crud   logic.UserCRUD
 	mapper usersMapper
@@ -34,7 +29,8 @@ func (c *UsersController) GetUser(w http.ResponseWriter, r *http.Request) error 
 
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		return fmt.Errorf("%w: convert id to integer: %w", logic.ErrInvalidInput, err)
+		err = fmt.Errorf("%w: convert id to integer: %w", logic.ErrInvalidInput, err)
+		return logic.SetEndUserMsg(err, "User ID must be an integer!")
 	}
 
 	// 2. Get actual user data from logic layer

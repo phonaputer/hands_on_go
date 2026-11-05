@@ -40,7 +40,7 @@ func (r *MySQLUserRepository) GetByID(ctx context.Context, id int) (*logic.User,
 	var row userMySQLRow
 	err := r.db.QueryRowxContext(ctx, query, id).StructScan(&row)
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, logic.ErrUserNotFound
+		return nil, logic.SetEndUserMsg(logic.ErrUserNotFound, "User not found!")
 	}
 	if err != nil {
 		return nil, fmt.Errorf("select: %w", err)

@@ -4,14 +4,38 @@ import (
 	"errors"
 )
 
+// 1. Error variables
+// Pros
+//   * Error comparison - errors.Is(err, ErrUserNotFound)
+//   * These are standard for Go, everyone understands this pattern easily
+//   * easy to understand pattern, it's just a variable
+//
+// Cons
+//   * It's just a variable, it can't contain additional information beyond a message
+//
+//
+
 var (
 	ErrUserNotFound = errors.New("user not found")
 	ErrInvalidInput = errors.New("input is not valid")
 )
 
+// 2. Custom `error` implementations
+// Pros
+//   * Now you can have additional information beyond the message
+//
+// Cons
+//   * It's a bit more boilerplate
+//   * It's a more complex pattern
+//   * Unless you're also using error variables, standard library `errors.Is` no longer will work for you
+
 type endUserMsgError struct {
 	error
 	endUserMessage string
+}
+
+func (e *endUserMsgError) Unwrap() error {
+	return e.error
 }
 
 func NewEndUserMsgErr(msg string) error {
