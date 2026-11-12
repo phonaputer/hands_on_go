@@ -1,7 +1,6 @@
 package restapi
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -9,17 +8,20 @@ import (
 )
 
 type UsersController struct {
-	crud   logic.UserCRUD
-	mapper usersMapper
+	crud      logic.UserCRUD
+	mapper    usersMapper
+	validator usersValidator
 }
 
 func NewUsersController(
 	crud logic.UserCRUD,
 	mapper usersMapper,
+	validator usersValidator,
 ) *UsersController {
 	return &UsersController{
-		crud:   crud,
-		mapper: mapper,
+		crud:      crud,
+		mapper:    mapper,
+		validator: validator,
 	}
 }
 
@@ -39,17 +41,27 @@ func (c *UsersController) GetUser(w http.ResponseWriter, r *http.Request) error 
 		return fmt.Errorf("get by id: %w", err)
 	}
 
-	// 3. Map result to HTTP response and send the reponse back
+	// 3. Map result to HTTP response and send the response back
 	response := c.mapper.User2UserResponse(user)
 
-	jsonString, err := json.Marshal(response)
+	return jsonResponse(w, http.StatusOK, response)
+}
+
+func (c *UsersController) Create(w http.ResponseWriter, r *http.Request) error {
+	// Hexagonal architecture
+
+	// 1. Receive request, parse it, verify it is valid
+	user, err := c.validator.Create(r)
 	if err != nil {
-		return fmt.Errorf("json marshal response: %w", err)
+		return fmt.Errorf("validate: %w", err)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonString)
+	// 2. Call business logic to create the user
+	userID, err := c.crud.Create(r.Context(), user)
+	if err != nil {
+		return fmt.Errorf("create user: %w", err)
+	}
 
-	return nil
+	// 3. Serialize the resulting user ID to response
+	return jsonResponse(w, http.StatusCreated, &userIDResponse{ID: userID})
 }

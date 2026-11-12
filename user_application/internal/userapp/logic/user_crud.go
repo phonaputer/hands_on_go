@@ -6,6 +6,15 @@ import (
 
 type UserCRUD interface {
 	GetByID(ctx context.Context, userID int) (*User, error)
+	Create(ctx context.Context, user *NewUser) (int, error)
+}
+
+type NewUser struct {
+	FirstName  string
+	MiddleName *string
+	LastName   string
+	Age        int
+	Email      string
 }
 
 type UserCRUDImpl struct {
