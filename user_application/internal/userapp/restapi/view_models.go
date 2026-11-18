@@ -2,6 +2,14 @@ package restapi
 
 import "time"
 
+type createUserRequest struct {
+	FirstName  *string `json:"first_name"`
+	MiddleName *string `json:"middle_name,omitempty"`
+	LastName   *string `json:"last_name"`
+	Age        *int    `json:"age"`
+	Email      *string `json:"email"`
+}
+
 type userResponse struct {
 	ID         int       `json:"id"`
 	FirstName  string    `json:"first_name"`
