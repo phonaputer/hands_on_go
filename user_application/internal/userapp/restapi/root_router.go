@@ -12,6 +12,7 @@ func NewRootRouter(
 	}
 
 	m.HandleErrFunc("GET /users/{user_id}", usersController.GetUser)
+	m.HandleErrFunc("POST /users", usersController.Create)
 
 	return m.router
 }

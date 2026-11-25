@@ -16,8 +16,9 @@ import (
 //
 
 var (
-	ErrUserNotFound = errors.New("user not found")
-	ErrInvalidInput = errors.New("input is not valid")
+	ErrUserNotFound           = errors.New("user not found")
+	ErrInvalidInput           = errors.New("input is not valid")
+	ErrEmailAlreadyRegistered = errors.New("a user is already registered with this email")
 )
 
 // 2. Custom `error` implementations

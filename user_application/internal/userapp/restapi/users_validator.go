@@ -2,6 +2,7 @@ package restapi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"userapp/internal/userapp/logic"
@@ -12,6 +13,10 @@ type usersValidator interface {
 }
 
 type jsonUsersValidator struct{}
+
+func newJSONUsersValidator() jsonUsersValidator {
+	return jsonUsersValidator{}
+}
 
 func (v jsonUsersValidator) Create(r *http.Request) (*logic.NewUser, error) {
 	var body createUserRequest
@@ -30,18 +35,35 @@ func (v jsonUsersValidator) Create(r *http.Request) (*logic.NewUser, error) {
 
 	// 3. validate that age < 100
 
+	err = intSize(err, body.Age, 0, 99, "age must be between 0 and 99")
+
 	if err != nil {
 		err = logic.SetEndUserMsg(err, err.Error())
-		return nil, fmt.Errorf("%w: %w", 123, logic.ErrInvalidInput, err)
+		return nil, fmt.Errorf("%w: %w", logic.ErrInvalidInput, err)
 	}
 
 	return &logic.NewUser{
-		FirstName:  "",
-		MiddleName: new(string),
-		LastName:   "",
-		Age:        0,
-		Email:      "",
+		FirstName:  *body.FirstName,
+		MiddleName: body.MiddleName,
+		LastName:   *body.LastName,
+		Age:        *body.Age,
+		Email:      *body.Email,
 	}, nil
+}
+
+func intSize(err error, value *int, min, max int, msg string) error {
+	if err != nil {
+		return err
+	}
+	if value == nil {
+		return err
+	}
+
+	if max < *value || *value < min {
+		return errors.New(msg)
+	}
+
+	return nil
 }
 
 func stringLength(err error, value *string, min, max int, msg string) error {
@@ -55,7 +77,7 @@ func stringLength(err error, value *string, min, max int, msg string) error {
 	length := len([]rune(*value))
 
 	if max < length || length < min {
-		return fmt.Errorf(msg)
+		return errors.New(msg)
 	}
 
 	return nil
@@ -67,7 +89,7 @@ func notNil[T any](err error, value *T, msg string) error {
 	}
 
 	if value == nil {
-		return fmt.Errorf(msg)
+		return errors.New(msg)
 	}
 
 	return nil

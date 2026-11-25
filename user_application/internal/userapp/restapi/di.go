@@ -10,8 +10,9 @@ type Component struct {
 
 	errorResponseAdapter *errorResponseAdapter
 
-	usersController *UsersController
-	jsonUsersMapper jsonUsersMapper
+	usersController    *UsersController
+	jsonUsersMapper    jsonUsersMapper
+	jsonUsersValidator jsonUsersValidator
 }
 
 type Dependencies struct {
@@ -22,10 +23,12 @@ func NewComponent(d *Dependencies) *Component {
 	var c Component
 
 	c.jsonUsersMapper = newJSONUsersMapper()
+	c.jsonUsersValidator = newJSONUsersValidator()
 
 	c.usersController = NewUsersController(
 		d.UserCRUD,
 		c.jsonUsersMapper,
+		c.jsonUsersValidator,
 	)
 
 	c.errorResponseAdapter = newErrorResponseAdapter()
